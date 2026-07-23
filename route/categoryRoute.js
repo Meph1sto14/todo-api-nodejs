@@ -1,6 +1,12 @@
 const express = require('express');
 const protect = require('../middleware/protect');
 const restrictTo = require('../middleware/restrictTo');
+const validate = require('../middleware/validate');
+const {
+    createCategoryRules,
+    updateCategoryRules,
+    categoryIdRules,
+} = require('../validator/categoryValidator');
 const {
     createCategory,
     getAllCategories,
@@ -10,7 +16,6 @@ const {
 } = require('../controller/categoryController');
 
 const router = express.Router();
-
 
 router.use(protect);
 
@@ -54,7 +59,7 @@ router.use(protect);
  */
 router.route('/')
     .get(getAllCategories)
-    .post(createCategory);
+    .post(createCategoryRules, validate, createCategory);
 
 /**
  * @swagger
