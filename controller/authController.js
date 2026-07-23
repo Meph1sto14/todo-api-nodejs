@@ -93,7 +93,7 @@ exports.refresh = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user._id, { refreshToken: undefined });
+    await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: '' } });
 
     res.status(200).json({
         status: 'success',

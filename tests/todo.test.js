@@ -11,11 +11,14 @@ let categoryId;
 let todoId;
 
 let regularToken;
+let regularRefreshToken;
 let regularUserId;
 let regularCategoryId;
 
 const testEmail = `testuser_${Date.now()}@example.com`;
 const regularEmail = `regularuser_${Date.now()}@example.com`;
+
+
 
 beforeAll(async () => {
   if (mongoose.connection.readyState === 0) {
@@ -45,6 +48,7 @@ beforeAll(async () => {
   });
 
   regularToken = regularRes.body.token;
+  regularRefreshToken = regularRes.body.refreshToken;
   regularUserId = regularRes.body.data.user._id;
 
   const regularCategory = await Category.create({ name: 'Regular Category', user: regularUserId });
@@ -258,5 +262,48 @@ describe('Todo - AUTHORIZATION (role-based)', () => {
       .set('Authorization', `Bearer ${regularToken}`);
 
     expect(res.statusCode).toBe(403);
+  });
+});
+
+describe('Auth - REFRESH TOKEN & LOGOUT', () => {
+  it('harus berhasil dapat access token baru via refresh token', async () => {
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: regularRefreshToken });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('success');
+    expect(res.body.token).toBeDefined();
+  });
+
+  it('harus gagal (400) refresh tanpa menyertakan refreshToken', async () => {
+    const res = await request(app).post('/api/auth/refresh').send({});
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('harus gagal (401) refresh dengan refresh token tidak valid', async () => {
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: 'token-ngasal-tidak-valid' });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('harus berhasil logout', async () => {
+    const res = await request(app)
+      .post('/api/auth/logout')
+      .set('Authorization', `Bearer ${regularToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('success');
+  });
+
+  it('harus gagal (401) refresh dengan refresh token yang sudah di-revoke setelah logout', async () => {
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: regularRefreshToken });
+
+    expect(res.statusCode).toBe(401);
   });
 });
