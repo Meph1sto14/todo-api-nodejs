@@ -18,12 +18,15 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updated_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    archived: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

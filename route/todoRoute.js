@@ -13,6 +13,8 @@ const {
   getTodo,
   updateTodo,
   deleteTodo,
+  restoreTodo,
+  permanentDeleteTodo,
 } = require('../controller/todoController');
 
 const router = express.Router();
@@ -180,4 +182,7 @@ router.route('/:id')
   .patch(todoIdRules, updateTodoRules, validate, updateTodo)
   .delete(todoIdRules, validate, deleteTodo);
 
+router.patch('/:id/restore', todoIdRules, validate, restoreTodo);
+router.delete('/:id/permanent', todoIdRules, validate, permanentDeleteTodo);
+  
 module.exports = router;

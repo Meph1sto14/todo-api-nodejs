@@ -22,8 +22,11 @@ const todoSchema = new mongoose.Schema(
       ref: 'Category',
       required: [true, 'Todo harus terhubung dengan kategori'],
     },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updated_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    archived: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
 module.exports = mongoose.model('Todo', todoSchema);

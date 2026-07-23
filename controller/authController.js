@@ -8,6 +8,10 @@ exports.register = catchAsync(async (req, res, next) => {
 
     const newUser = await User.create({ name, email, password, role });
 
+    newUser.created_by = newUser._id;
+    newUser.updated_by = newUser._id;
+    await newUser.save();
+    
     const token = signToken(newUser._id);
 
     // sembunyikan password sebelum dikirim balik
