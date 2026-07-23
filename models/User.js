@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    refreshToken: { type: String, select: false },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     updated_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     archived: { type: Boolean, default: false },

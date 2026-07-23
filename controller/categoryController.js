@@ -61,7 +61,7 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
     const updatedCategory = await Category.findByIdAndUpdate(
         req.params.id,
         { ...req.body, updated_by: req.user._id },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
 
     res.status(200).json({

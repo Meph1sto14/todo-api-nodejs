@@ -107,7 +107,7 @@ exports.updateTodo = catchAsync(async (req, res, next) => {
     const updatedTodo = await Todo.findByIdAndUpdate(
         req.params.id,
         { ...req.body, updated_by: req.user._id },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
 
     await recordActivity({
@@ -138,7 +138,7 @@ exports.deleteTodo = catchAsync(async (req, res, next) => {
     const archivedTodo = await Todo.findByIdAndUpdate(
         req.params.id,
         { archived: true, updated_by: req.user._id },
-        { new: true }
+        { returnDocument: 'after' }
     );
 
     await recordActivity({
@@ -174,7 +174,7 @@ exports.restoreTodo = catchAsync(async (req, res, next) => {
     const restoredTodo = await Todo.findByIdAndUpdate(
         req.params.id,
         { archived: false, updated_by: req.user._id },
-        { new: true }
+        { returnDocument: 'after' }
     );
 
     await recordActivity({
