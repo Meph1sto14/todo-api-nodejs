@@ -10,33 +10,56 @@ let userId;
 let categoryId;
 let todoId;
 
+let regularToken;
+let regularUserId;
+let regularCategoryId;
+
 const testEmail = `testuser_${Date.now()}@example.com`;
+const regularEmail = `regularuser_${Date.now()}@example.com`;
 
 beforeAll(async () => {
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(process.env.MONGO_URI);
   }
 
+  // user utama dipakai di seluruh test lain -> dibuat admin supaya tetap
+  // bisa akses semua endpoint (termasuk permanent delete) atas data miliknya sendiri
   const res = await request(app).post('/api/auth/register').send({
     name: 'Test User',
     email: testEmail,
     password: 'password123',
+    role: 'admin',
   });
-
-  console.log('REGISTER STATUS:', res.statusCode);
-  console.log('REGISTER BODY:', JSON.stringify(res.body, null, 2));
 
   token = res.body.token;
   userId = res.body.data.user._id;
 
   const category = await Category.create({ name: 'Test Category', user: userId });
   categoryId = category._id;
+
+  // user biasa, khusus buat test otorisasi role (403 permanent delete)
+  const regularRes = await request(app).post('/api/auth/register').send({
+    name: 'Regular User',
+    email: regularEmail,
+    password: 'password123',
+  });
+
+  regularToken = regularRes.body.token;
+  regularUserId = regularRes.body.data.user._id;
+
+  const regularCategory = await Category.create({ name: 'Regular Category', user: regularUserId });
+  regularCategoryId = regularCategory._id;
 });
 
 afterAll(async () => {
   await Todo.deleteMany({ user: userId });
   await Category.deleteMany({ user: userId });
   await User.deleteOne({ _id: userId });
+
+  await Todo.deleteMany({ user: regularUserId });
+  await Category.deleteMany({ user: regularUserId });
+  await User.deleteOne({ _id: regularUserId });
+
   await mongoose.connection.close();
 });
 
@@ -214,5 +237,26 @@ describe('Todo - SOFT DELETE, RESTORE, PERMANENT DELETE', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toBe(204);
+  });
+});
+
+describe('Todo - AUTHORIZATION (role-based)', () => {
+  it('harus gagal (403) permanent delete todo jika role bukan admin', async () => {
+    const createRes = await request(app)
+      .post('/api/todos')
+      .set('Authorization', `Bearer ${regularToken}`)
+      .send({ title: 'Todo milik user biasa', category: regularCategoryId });
+
+    const regularTodoId = createRes.body.data._id;
+
+    await request(app)
+      .delete(`/api/todos/${regularTodoId}`)
+      .set('Authorization', `Bearer ${regularToken}`);
+
+    const res = await request(app)
+      .delete(`/api/todos/${regularTodoId}/permanent`)
+      .set('Authorization', `Bearer ${regularToken}`);
+
+    expect(res.statusCode).toBe(403);
   });
 });

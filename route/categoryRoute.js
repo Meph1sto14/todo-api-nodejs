@@ -1,5 +1,6 @@
 const express = require('express');
 const protect = require('../middleware/protect');
+const restrictTo = require('../middleware/restrictTo');
 const {
     createCategory,
     getAllCategories,
@@ -9,6 +10,7 @@ const {
 } = require('../controller/categoryController');
 
 const router = express.Router();
+
 
 router.use(protect);
 
@@ -117,6 +119,6 @@ router.route('/')
 router.route('/:id')
     .get(getCategory)
     .patch(updateCategory)
-    .delete(deleteCategory);
+    .delete(restrictTo('admin'), deleteCategory);
 
 module.exports = router;

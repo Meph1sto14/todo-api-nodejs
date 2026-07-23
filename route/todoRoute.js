@@ -1,5 +1,6 @@
 const express = require('express');
 const protect = require('../middleware/protect');
+const restrictTo = require('../middleware/restrictTo');
 const validate = require('../middleware/validate');
 const {
   createTodoRules,
@@ -18,6 +19,7 @@ const {
 } = require('../controller/todoController');
 
 const router = express.Router();
+
 
 router.use(protect);
 
@@ -183,6 +185,6 @@ router.route('/:id')
   .delete(todoIdRules, validate, deleteTodo);
 
 router.patch('/:id/restore', todoIdRules, validate, restoreTodo);
-router.delete('/:id/permanent', todoIdRules, validate, permanentDeleteTodo);
+router.delete('/:id/permanent', todoIdRules, validate, restrictTo('admin'), permanentDeleteTodo);
   
 module.exports = router;
