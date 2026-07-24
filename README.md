@@ -47,18 +47,20 @@ Dibangun dengan struktur **Controller–Service–Model** menggunakan Node.js, E
 
 ## Struktur Folder
 
+\`\`\`
 todo-api/
-├── config/           # Koneksi DB & konfigurasi Swagger
-├── controller/       # Handler request per resource
-├── middleware/       # Auth, validasi, rate limit, error handler, dll
-├── models/           # Schema Mongoose (User, Todo, Category, ActivityLog)
-├── route/            # Definisi endpoint per resource
-├── service/          # Logic reusable (mis. pencatatan activity log)
-├── validator/        # Rule validasi input (express-validator)
-├── util/             # Helper (AppError, catchAsync, sign token, dll)
-├── tests/            # Automated testing (Jest + Supertest)
-├── app.js            # Setup Express app & routing
-└── server.js         # Entry point, koneksi DB, dan start server
+├── config/          # Koneksi DB & konfigurasi Swagger
+├── controller/      # Handler request per resource
+├── middleware/      # Auth, validasi, rate limit, error handler, dll
+├── models/          # Schema Mongoose (User, Todo, Category, ActivityLog)
+├── route/           # Definisi endpoint per resource
+├── service/         # Logic reusable (mis. pencatatan activity log)
+├── validator/       # Rule validasi input (express-validator)
+├── util/            # Helper (AppError, catchAsync, sign token, dll)
+├── tests/           # Automated testing (Jest + Supertest)
+├── app.js           # Setup Express app & routing
+└── server.js        # Entry point, koneksi DB, dan start server
+\`\`\`
 
 ## Instalasi
 
