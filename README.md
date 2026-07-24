@@ -47,7 +47,7 @@ Dibangun dengan struktur **Controller–Service–Model** menggunakan Node.js, E
 
 ## Struktur Folder
 
-\`\`\`
+```
 todo-api/
 ├── config/          # Koneksi DB & konfigurasi Swagger
 ├── controller/      # Handler request per resource
@@ -60,7 +60,7 @@ todo-api/
 ├── tests/           # Automated testing (Jest + Supertest)
 ├── app.js           # Setup Express app & routing
 └── server.js        # Entry point, koneksi DB, dan start server
-\`\`\`
+```
 
 ## Instalasi
 
